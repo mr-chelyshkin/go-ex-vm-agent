@@ -2,3 +2,13 @@ logger:
   level: debug
   output: stdout
   format: console
+
+agent:
+
+
+runner:
+  graceful_shutdown_timeout: 30s
+  graceful_restart_delay: 5s
+  max_restarts: 20
+  enable_auto_restart_on_failure: true
+  exponential_backoff: true

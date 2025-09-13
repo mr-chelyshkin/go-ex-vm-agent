@@ -9,10 +9,11 @@ import (
 
 func defaultConfig() Config {
 	return Config{
-		ShutdownTimeout: 30 * time.Second,
-		RestartDelay:    5 * time.Second,
-		MaxRestarts:     3,
-		EnableRestart:   true,
+		ShutdownTimeout:    30 * time.Second,
+		RestartDelay:       5 * time.Second,
+		MaxRestarts:        3,
+		EnableRestart:      true,
+		ExponentialBackoff: true,
 	}
 }
 
@@ -25,6 +26,8 @@ type Config struct {
 	MaxRestarts int `mapstructure:"max_restarts" validate:"min=0,max=100"`
 	// EnableRestart включает автоматический рестарт при падении worker'а
 	EnableRestart bool `mapstructure:"enable_restart"`
+	//
+	ExponentialBackoff bool `mapstructure:"exponential_backoff"`
 }
 
 func (c *Config) Validate() error {
