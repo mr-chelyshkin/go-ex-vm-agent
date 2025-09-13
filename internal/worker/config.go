@@ -9,7 +9,7 @@ import (
 
 func defaultConfig() Config {
 	return Config{
-		ShutdownTimeout: 30 * time.Second,
+		TaskStopTimeout: 10 * time.Second,
 		TaskTimeout:     5 * time.Minute,
 		MaxTasks:        100,
 		StopOnError:     false,
@@ -17,10 +17,14 @@ func defaultConfig() Config {
 }
 
 type Config struct {
-	ShutdownTimeout time.Duration `mapstructure:"shutdown_timeout" validate:"min=1s,max=5m"`
-	TaskTimeout     time.Duration `mapstructure:"task_timeout" validate:"min=0"`
-	MaxTasks        int           `mapstructure:"max_tasks" validate:"min=1,max=1000"`
-	StopOnError     bool          `mapstructure:"stop_on_error"`
+	// TaskStopTimeout максимальное время ожидания остановки одной задачи
+	TaskStopTimeout time.Duration `mapstructure:"task_stop_timeout" validate:"min=1s,max=2m"`
+	// TaskTimeout максимальное время выполнения задачи (0 = без лимита)
+	TaskTimeout time.Duration `mapstructure:"task_timeout" validate:"min=0"`
+	// MaxTasks максимальное количество одновременно работающих задач
+	MaxTasks int `mapstructure:"max_tasks" validate:"min=1,max=1000"`
+	// StopOnError останавливать ли воркер при ошибке в задаче
+	StopOnError bool `mapstructure:"stop_on_error"`
 }
 
 func (c *Config) Validate() error {
@@ -35,8 +39,8 @@ func (c *Config) Validate() error {
 func (c *Config) setDefaults() {
 	defaults := defaultConfig()
 
-	if c.ShutdownTimeout == 0 {
-		c.ShutdownTimeout = defaults.ShutdownTimeout
+	if c.TaskStopTimeout == 0 {
+		c.TaskStopTimeout = defaults.TaskStopTimeout
 	}
 	if c.TaskTimeout == 0 {
 		c.TaskTimeout = defaults.TaskTimeout
@@ -52,8 +56,8 @@ func (c *Config) formatValidationErr(err error) error {
 	if errors.As(err, &validationErrors) {
 		for _, fieldError := range validationErrors {
 			switch fieldError.Field() {
-			case "ShutdownTimeout":
-				return initError("shutdown timeout must be between 1s and 5m, got: %v", c.ShutdownTimeout)
+			case "TaskStopTimeout":
+				return initError("task stop timeout must be between 1s and 2m, got: %v", c.TaskStopTimeout)
 			case "TaskTimeout":
 				return initError("task timeout must be non-negative, got: %v", c.TaskTimeout)
 			case "MaxTasks":

@@ -37,15 +37,16 @@ func main() {
 
 	// Конфигурации для runner и worker
 	runnerConfig := runner.Config{
-		ShutdownTimeout: 30 * time.Second,
-		RestartDelay:    5 * time.Second,
-		MaxRestarts:     3,
-		EnableRestart:   true,
+		ShutdownTimeout:    30 * time.Second, // Главный таймаут приложения
+		RestartDelay:       5 * time.Second,  // Базовая задержка рестарта
+		MaxRestarts:        0,                // 0 = бесконечно рестартуем
+		EnableRestart:      true,
+		ExponentialBackoff: true, // Увеличиваем задержку: 5s, 10s, 20s, 40s...
 	}
 
 	workerConfig := worker.Config{
-		ShutdownTimeout: 30 * time.Second,
-		TaskTimeout:     5 * time.Minute,
+		TaskStopTimeout: 10 * time.Second, // Таймаут остановки одной задачи
+		TaskTimeout:     5 * time.Minute,  // Таймаут выполнения задачи
 		MaxTasks:        10,
 		StopOnError:     false,
 	}

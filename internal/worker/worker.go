@@ -102,32 +102,35 @@ func (w *Worker) Start(ctx context.Context) error {
 	return nil
 }
 
+// Stop выполняет graceful shutdown воркера
 func (w *Worker) Stop(ctx context.Context) error {
 	w.mu.Lock()
 	if w.status != WorkerStatusRunning {
+		currentStatus := w.status
 		w.mu.Unlock()
-		return stopError("worker is not running, current status: %s", w.status)
+		return stopError("worker is not running, current status: %s", currentStatus)
 	}
 	w.status = WorkerStatusStopping
 	w.mu.Unlock()
 
 	agent.Logger.Info().Msg("Stopping worker")
-	shutdownCtx, cancel := context.WithTimeout(ctx, w.config.ShutdownTimeout)
-	defer cancel()
 
+	// Сигнализируем о начале остановки
 	close(w.stopCh)
-	//TODO: use new wg Format.
+
+	// Останавливаем все задачи параллельно
 	var wg sync.WaitGroup
 	w.mu.RLock()
 	for name, wrapper := range w.tasks {
 		wg.Add(1)
 		go func(name string, wrapper *taskWrapper) {
 			defer wg.Done()
-			w.stopTask(shutdownCtx, wrapper)
+			w.stopTask(ctx, wrapper) // Используем переданный контекст
 		}(name, wrapper)
 	}
 	w.mu.RUnlock()
 
+	// Ждем завершения всех задач или таймаута контекста
 	done := make(chan struct{})
 	go func() {
 		wg.Wait()
@@ -137,10 +140,8 @@ func (w *Worker) Stop(ctx context.Context) error {
 	select {
 	case <-done:
 		agent.Logger.Info().Msg("All tasks stopped gracefully")
-	case <-shutdownCtx.Done():
-		agent.Logger.Warn().
-			Dur("timeout", w.config.ShutdownTimeout).
-			Msg("Graceful shutdown timeout exceeded")
+	case <-ctx.Done():
+		agent.Logger.Warn().Msg("Worker shutdown timeout exceeded")
 	}
 
 	w.mu.Lock()
@@ -149,6 +150,7 @@ func (w *Worker) Stop(ctx context.Context) error {
 
 	close(w.doneCh)
 	agent.Logger.Info().Msg("Worker stopped")
+
 	return nil
 }
 

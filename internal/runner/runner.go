@@ -325,18 +325,31 @@ func (r *Runner) restartWorker() error {
 	r.mu.Lock()
 	r.status = RunnerStatusRestarting
 	r.restartCount++
+	currentAttempt := r.restartCount
 	r.mu.Unlock()
 
 	r.logger.Info().
-		Int("attempt", r.restartCount).
+		Int("attempt", currentAttempt).
 		Msg("Restarting worker")
 
 	// Останавливаем текущий worker
 	r.shutdownWorker()
 
-	// Ждем задержку перед рестартом
-	if r.config.RestartDelay > 0 {
-		time.Sleep(r.config.RestartDelay)
+	// Вычисляем задержку с учетом exponential backoff
+	delay := r.config.GetRestartDelay(currentAttempt - 1) // attempt начинается с 0
+
+	if delay > 0 {
+		r.logger.Info().
+			Dur("delay", delay).
+			Int("attempt", currentAttempt).
+			Bool("exponential_backoff", r.config.ExponentialBackoff).
+			Msg("Waiting before restart")
+
+		select {
+		case <-time.After(delay):
+		case <-r.ctx.Done():
+			return restartError("restart cancelled during delay")
+		}
 	}
 
 	// Запускаем новый worker
@@ -352,7 +365,10 @@ func (r *Runner) restartWorker() error {
 	r.lastError = nil
 	r.mu.Unlock()
 
-	r.logger.Info().Msg("Worker restarted successfully")
+	r.logger.Info().
+		Int("attempt", currentAttempt).
+		Msg("Worker restarted successfully")
+
 	return nil
 }
 
@@ -384,7 +400,12 @@ func (r *Runner) shouldStopRestarting() bool {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	return r.config.MaxRestarts > 0 && r.restartCount >= r.config.MaxRestarts
+	// Если MaxRestarts = 0, то рестартуем бесконечно
+	if r.config.MaxRestarts == 0 {
+		return false
+	}
+
+	return r.restartCount >= r.config.MaxRestarts
 }
 
 // supportsSignal проверяет поддержку сигнала системой
