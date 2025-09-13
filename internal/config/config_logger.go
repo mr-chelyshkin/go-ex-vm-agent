@@ -17,7 +17,7 @@ type loggerOptions struct {
 	FilePath   string `mapstructure:"path"`
 }
 
-func (lc loggerConfig) ToPkgConfig() logger.Config {
+func (lc loggerConfig) ToLoggerConfig() logger.Config {
 	return logger.Config{
 		Level:      lc.Level,
 		Format:     lc.Format,

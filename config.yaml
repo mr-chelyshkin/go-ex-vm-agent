@@ -4,5 +4,30 @@ logger:
   format: console
 
 agent:
-  shutdown_timeout: 1m
+  graceful_shutdown_workers_timeout: 40s
+  graceful_shutdown_agent_timeout: 1m
 
+  restart_options:
+    delay: 30s
+    max_restarts: 5
+    restart_on_failure: true
+    restart_exponent: true
+
+  task_options:
+    max_timeout: 1m
+    max_count: 20
+    stop_on_failure: true
+
+
+#agents:
+#  //graceful_shutdown_agent_timeout: 1m
+#  //graceful_shutdown_worker_timeout: 40s
+#  //max_task_timeout: 1m
+#  //max_task_count: 20
+#  //stop_on_failure: true
+#  //options:
+#
+#  //restart_delay: 30s
+#  max_restarts: 5
+#  restart_on_failure: true
+#  exponential_backoff: true

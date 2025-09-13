@@ -29,27 +29,15 @@ func main() {
 		panic(err)
 	}
 
-	loggerConfig := cfg.Logger.ToPkgConfig()
+	loggerConfig := cfg.Logger.ToLoggerConfig()
 	agent.Logger, err = logger.New(loggerConfig)
 	if err != nil {
 		panic(err)
 	}
 
 	// Конфигурации для runner и worker
-	runnerConfig := runner.Config{
-		ShutdownTimeout:    30 * time.Second, // Главный таймаут приложения
-		RestartDelay:       5 * time.Second,  // Базовая задержка рестарта
-		MaxRestarts:        0,                // 0 = бесконечно рестартуем
-		EnableRestart:      true,
-		ExponentialBackoff: true, // Увеличиваем задержку: 5s, 10s, 20s, 40s...
-	}
-
-	workerConfig := worker.Config{
-		TaskStopTimeout: 10 * time.Second, // Таймаут остановки одной задачи
-		TaskTimeout:     5 * time.Minute,  // Таймаут выполнения задачи
-		MaxTasks:        10,
-		StopOnError:     false,
-	}
+	runnerConfig := cfg.Agent.ToRunnerConfig()
+	workerConfig := cfg.Agent.ToWorkerConfig()
 
 	// Фабрика задач
 	taskFactory := func() []worker.Task {

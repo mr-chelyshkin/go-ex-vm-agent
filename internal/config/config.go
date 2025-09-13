@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Logger loggerConfig `mapstructure:"logger"`
+	Agent  agentConfig  `mapstructure:"agent"`
 }
 
 func Load(path string) (*Config, error) {
