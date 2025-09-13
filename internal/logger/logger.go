@@ -11,6 +11,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+// Logger is a wrapper around zerolog.Logger.
 type Logger struct {
 	*zerolog.Logger
 }

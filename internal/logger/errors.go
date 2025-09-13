@@ -3,7 +3,10 @@ package logger
 import "fmt"
 
 const (
+	// ErrConfigValidation is a constant representing an error message format for configuration validation errors.
 	ErrConfigValidation = "config validation error: %s"
+
+	// ErrInitializeLogger indicates an error occurred during the initialization of the logger.
 	ErrInitializeLogger = "failed to initialize logger: %s"
 )
 

@@ -6,11 +6,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Config represents the application's configuration.
 type Config struct {
+	// Logger represents the configuration for the logging system.
 	Logger loggerConfig `mapstructure:"logger"`
-	Agent  agentConfig  `mapstructure:"agent"`
+
+	// Agent represents the configuration settings for the agent.
+	Agent agentConfig `mapstructure:"agent"`
 }
 
+// Load reads and parses a configuration file from the specified path and returns a Config object or an error.
 func Load(path string) (*Config, error) {
 	ext, err := getConfigFormatByExt(filepath.Ext(path))
 	if err != nil {

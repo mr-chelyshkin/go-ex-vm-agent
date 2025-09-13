@@ -20,17 +20,34 @@ func defaultConfig() Config {
 	}
 }
 
+// Config defines the logging configuration.
 type Config struct {
-	Level      LogLevel  `mapstructure:"level" validate:"required,log_level"`
-	Format     LogFormat `mapstructure:"format" validate:"required,log_format"`
-	Output     LogOutput `mapstructure:"output" validate:"required,log_output"`
-	Path       string    `mapstructure:"path" validate:"required_if=Output file"`
-	MaxBackups int       `mapstructure:"max_backups" validate:"omitempty,min=0,max=100"`
-	MaxAge     int       `mapstructure:"max_age" validate:"omitempty,min=1,max=365"`
-	MaxSize    int       `mapstructure:"max_size" validate:"omitempty,min=1,max=512"`
-	Compress   bool      `mapstructure:"compress"`
+	// Level represents the logging level for the application, e.g., debug, info, warn, etc.
+	Level LogLevel `mapstructure:"level" validate:"required,log_level"`
+
+	// Format defines the format of the log output (e.g., JSON or console).
+	Format LogFormat `mapstructure:"format" validate:"required,log_format"`
+
+	// Output specifies the log output destination (e.g., stdout, stderr, file, etc.).
+	Output LogOutput `mapstructure:"output" validate:"required,log_output"`
+
+	// Path specifies the file path where logs will be written when output format is set to "file".
+	Path string `mapstructure:"path" validate:"required_if=Output file"`
+
+	// MaxBackups specifies the maximum number of backup files to retain for log rotation. Valid range is 0 to 100.
+	MaxBackups int `mapstructure:"max_backups" validate:"omitempty,min=0,max=100"`
+
+	// MaxAge specifies the maximum number of days to retain old log files. Valid range is from 1 to 365 days.
+	MaxAge int `mapstructure:"max_age" validate:"omitempty,min=1,max=365"`
+
+	// MaxSize defines the maximum size (in MB) of a log file before it is rotated. Valid range is from 1 to 512 mb.
+	MaxSize int `mapstructure:"max_size" validate:"omitempty,min=1,max=512"`
+
+	// Compress determines whether old log files are compressed using gzip.
+	Compress bool `mapstructure:"compress"`
 }
 
+// Validate ensures the Config struct adheres to required rules and defaults.
 func (c *Config) Validate() error {
 	c.setDefaults()
 
