@@ -3,12 +3,23 @@ package runner
 import "fmt"
 
 const (
-	ErrRunnerInit    = "failed to initialize runner: %s"
-	ErrRunnerStart   = "failed to start runner: %s"
-	ErrRunnerStop    = "failed to stop runner: %s"
+	// ErrRunnerInit represents an error message format for failures during the initialization of a runner.
+	ErrRunnerInit = "failed to initialize runner: %s"
+
+	// ErrRunnerStart represents an error message format for failures occurring during the start of a runner.
+	ErrRunnerStart = "failed to start runner: %s"
+
+	// ErrRunnerStop represents an error message indicating a failure to stop the runner, formatted with additional context.
+	ErrRunnerStop = "failed to stop runner: %s"
+
+	// ErrRunnerRestart is an error message format for failures occurring during the restart of a runner.
 	ErrRunnerRestart = "failed to restart runner: %s"
-	ErrWorkerManage  = "worker management error: %s"
-	ErrSignalHandle  = "signal handling error: %s"
+
+	// ErrWorkerManage represents a formatted error string for worker management-related failures.
+	ErrWorkerManage = "worker management error: %s"
+
+	// ErrSignalHandle indicates an error occurred during signal handling, formatted with an additional descriptive message.
+	ErrSignalHandle = "signal handling error: %s"
 )
 
 func initError(format string, args ...any) error {
