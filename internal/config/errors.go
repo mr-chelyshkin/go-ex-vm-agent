@@ -8,11 +8,9 @@ const (
 )
 
 func initError(format string, args ...any) error {
-	message := fmt.Sprintf(format, args...)
-	return fmt.Errorf(ErrInitializeConfig, message)
+	return fmt.Errorf(ErrInitializeConfig, fmt.Sprintf(format, args...))
 }
 
 func parseError(format string, args ...any) error {
-	message := fmt.Sprintf(format, args...)
-	return fmt.Errorf(ErrConfigParse, message)
+	return fmt.Errorf(ErrConfigParse, fmt.Sprintf(format, args...))
 }
