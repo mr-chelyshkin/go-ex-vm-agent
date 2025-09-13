@@ -35,7 +35,9 @@ func getConfigFormatByExt(ext string) (Ext, error) {
 		return FormatJSON, nil
 	case ".toml":
 		return FormatTOML, nil
+	case "":
+		return "", parseError("empty file extension")
 	default:
-		return "", parseError("unsupported file format", ext)
+		return "", parseError("unsupported file format: %s", ext)
 	}
 }

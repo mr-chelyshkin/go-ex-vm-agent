@@ -29,6 +29,8 @@ func New(cfg Config) (*Logger, error) {
 		return nil, initError(err.Error())
 	}
 
+	//TODO: more options for TimeFormat
+	//TODO: add nocolor option
 	var logger zerolog.Logger
 	logger = logger.Level(level)
 	switch cfg.Format {
