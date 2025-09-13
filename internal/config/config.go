@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"path/filepath"
 
 	"github.com/spf13/viper"
@@ -13,22 +12,20 @@ type Config struct {
 
 func Load(path string) (*Config, error) {
 	v := viper.New()
-
 	ext, err := getConfigFormatByExt(filepath.Ext(path))
 	if err != nil {
 		return nil, err
 	}
 
-	v.SetConfigType(string(ext))
 	v.SetConfigFile(path)
-
+	v.SetConfigType(string(ext))
 	if err := v.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
+		return nil, initError("read file error: %s", err.Error())
 	}
 
 	var cfg Config
 	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
+		return nil, initError("unmarshal error: %s", err.Error())
 	}
 	return &cfg, nil
 }

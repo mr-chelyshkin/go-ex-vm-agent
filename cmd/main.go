@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	cfg, err := config.Load("config.yaml")
+	cfg, err := config.Load("conig.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -17,6 +17,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	agent.Logger.Info().Msg("Hello World")
 }

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -37,6 +36,6 @@ func getConfigFormatByExt(ext string) (Ext, error) {
 	case ".toml":
 		return FormatTOML, nil
 	default:
-		return "", fmt.Errorf("unsupported config file format: %s", ext)
+		return "", parseError("unsupported file format", ext)
 	}
 }

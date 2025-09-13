@@ -22,10 +22,10 @@ func (lc loggerConfig) ToPkgConfig() logger.Config {
 		Level:      lc.Level,
 		Format:     lc.Format,
 		Output:     lc.Output,
-		Path:       lc.Options.FilePath,
-		MaxBackups: lc.Options.MaxBackups,
 		MaxAge:     lc.Options.MaxAge,
 		MaxSize:    lc.Options.MaxSize,
 		Compress:   lc.Options.Compress,
+		Path:       lc.Options.FilePath,
+		MaxBackups: lc.Options.MaxBackups,
 	}
 }
